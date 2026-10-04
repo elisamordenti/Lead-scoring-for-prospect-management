@@ -1,0 +1,6 @@
+pandas
+faker
+python-dotenv
+tabpfn-client
+scikit-learn
+requests
