@@ -136,7 +136,7 @@ UNASSIGNED_TEAM = "Unassigned"
 # ---------------------------------------------------------------------------
 # Real-time alerts
 # ---------------------------------------------------------------------------
-HOT_LEAD_MIN_FIT_SCORE = 80
+HOT_LEAD_MIN_FIT_SCORE = 80   # re-check the alert count after rebuilding realistic fake data
 
 HOT_ACCOUNT_MIN_PEOPLE = 3
 HOT_ACCOUNT_WINDOW_DAYS = 14

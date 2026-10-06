@@ -249,11 +249,12 @@ def regular_leads(industry, count):
 
 
 def noise_leads():
-    """Students, freelancers with personal emails, and irrelevant roles."""
+    """Low-fit leads, which are the majority of a real demo form: students, freelancers,
+    irrelevant roles, tiny companies that are just curious, non-target industries."""
     leads, companies = [], []
 
-    # 6 students: university emails or Gmail, thesis-style use cases.
-    for _ in range(6):
+    # 8 students: university emails or Gmail, thesis-style use cases.
+    for _ in range(8):
         country = random.choice(["Germany", "United Kingdom", "United States", "Netherlands"])
         uni = f"University of {fake[COUNTRIES[country][0]].city()}"
         role = random.choice(["Student", "MSc Student", "PhD Candidate", "Working Student Data Science", "Intern"])
@@ -263,16 +264,16 @@ def noise_leads():
                                use_case, random_date(), country, personal=random.random() < 0.5))
         companies.append((uni, "education", country))
 
-    # 5 freelancers / self-employed with personal emails. Not in the enrichment table (nothing to look up).
-    for _ in range(5):
+    # 6 freelancers / self-employed with personal emails. Not in the enrichment table (nothing to look up).
+    for _ in range(6):
         country = random.choice(["Germany", "United States", "United Kingdom"])
         company = random.choice(["Self-employed", "Self-employed", "Freelance"])
         role = random.choice(["Freelance Data Scientist", "Consultant", "Developer", "Founder"])
         use_case = random.choice(USE_CASE_TEXTS["vague"] + ["Small side project with tabular data"])
         leads.append(make_lead(company, role, "1-49", random_tried(), use_case, random_date(), country, personal=True))
 
-    # 6 irrelevant roles at non-target companies.
-    for _ in range(6):
+    # 10 irrelevant roles at non-target companies.
+    for _ in range(10):
         country = random_country()
         company = new_company("other", country)
         lead = make_lead(company, random.choice(OTHER_ROLES), random.choices(config.COMPANY_SIZES, weights=SIZE_WEIGHTS["other"])[0],
@@ -281,19 +282,45 @@ def noise_leads():
         leads.append(lead)
         companies.append((company, "other", country))
 
+    # 6 tiny tech companies that are just curious.
+    for _ in range(6):
+        country = random_country()
+        company = new_company("tech", country)
+        role = random.choice(["Founder", "Developer", "Software Engineer", "CTO", "Product Manager"])
+        use_case = random.choice(USE_CASE_TEXTS["vague"] + ["Exploring TabPFN for our MVP", "Hackathon idea"])
+        leads.append(make_lead(company, role, "1-49", random_tried(), use_case, random_date(), country))
+        companies.append((company, "tech", country))
+
+    # 5 non-target industries with a real-sounding use case (they still score in the middle).
+    for text in ["Sales forecast per store and product", "Forecast delivery volumes per depot",
+                 "Predict which hotel guests will cancel their booking", "Forecast ticket demand for our events",
+                 "Which advertisers will churn next month?"]:
+        country = random_country()
+        company = new_company("other", country)
+        role = random.choice(["Data Analyst", "Head of Operations", "Marketing Manager", "Business Analyst"])
+        leads.append(make_lead(company, role, random.choices(config.COMPANY_SIZES, weights=SIZE_WEIGHTS["other"])[0],
+                               random_tried(), text, random_date(), country))
+        companies.append((company, "other", country))
+
     return leads, companies
+
+
+def add_people(leads, companies, company, industry, country, people, size, start, domain=None, personal=False):
+    """Adds several leads from one company. people = list of (day offset, role, tried_tabpfn, use_case).
+    industry=None means the company is left OUT of the enrichment table."""
+    for offset, role, tried, use_case in people:
+        leads.append(make_lead(company, role, size, tried, use_case, start + timedelta(days=offset), country,
+                               domain=domain, personal=personal))
+    if industry:
+        companies.append((company, industry, country))
 
 
 def planted_patterns():
     """Patterns planted on purpose so the demo can show detection working."""
     leads, companies = [], []
 
-    def add(company, industry, country, people, size, start, domain=None):
-        """people = list of (day offset, role, tried_tabpfn, use_case)."""
-        for offset, role, tried, use_case in people:
-            leads.append(make_lead(company, role, size, tried, use_case, start + timedelta(days=offset), country, domain=domain))
-        if industry:
-            companies.append((company, industry, country))
+    def add(*args, **kwargs):
+        add_people(leads, companies, *args, **kwargs)
 
     # HOT ACCOUNT A (buying group): a data scientist first, Head of Data ~2 weeks later (inside 14 days).
     add("Nordhafen Bank AG", "finance", "Germany", [
@@ -396,14 +423,89 @@ def planted_patterns():
     return leads, companies
 
 
+def tricky_leads():
+    """Edge cases, each testing one rule. Some are handled by the engine; others are
+    expected to fool the keyword rules on purpose, to show honest limits of v1."""
+    leads, companies = [], []
+
+    def add(*args, **kwargs):
+        add_people(leads, companies, *args, **kwargs)
+
+    def day(n):
+        return TODAY - timedelta(days=n)
+
+    # --- Should be handled correctly ---
+    # Big company alone is not enough: HR at a large bank, vague use case.
+    add("Falkenried Bank AG", "finance", "Germany",
+        [(0, "HR Business Partner", "Not yet", "Evaluating AI tools for the team")], "1000+", day(16))
+    # Senior technical role, but a tiny company that is just curious -> no size points.
+    add("Quillby Labs Ltd", "tech", "United Kingdom",
+        [(0, "Head of Data Science", "Just started exploring", "Just curious what TabPFN can do")], "1-49", day(7))
+    # Strong profile, but signs up with a personal email -> penalised, not excluded.
+    add("Westbrook Capital Inc", "finance", "United States",
+        [(0, "Data Scientist", "Tried it a few times", "Credit default prediction for consumer loans")],
+        "1000+", day(9), personal=True)
+    # Working student with a company email at a big bank -> student rule wins.
+    add("Elbtal Sparkasse AG", "finance", "Germany",
+        [(0, "Working Student Risk Analytics", "Tried it a few times", "Credit risk scoring for my team")], "1000+", day(12))
+    # Already using TabPFN, but no concrete use case -> no commercial-use signal.
+    add("Tessaro Software GmbH", "tech", "Germany",
+        [(0, "ML Engineer", config.ALREADY_USING, "Want to learn more about enterprise options")], "250-999", day(3))
+    # Large consultancy without a target use case -> no consultancy route.
+    add("Brennan & Cole Advisory LLP", "consulting", "United Kingdom",
+        [(0, "Partner", "Not yet", "Exploring AI offerings for our clients")], "1000+", day(18))
+    # Same person submitting the form 3 times -> must NOT look like a hot account (1 person, not 3).
+    first, last = person_name("Netherlands")
+    for offset in (0, 2, 5):
+        leads.append({"first_name": first, "last_name": last,
+                      "email": f"{ascii_slug(first)}.{ascii_slug(last)}@zuiderveld-health.example",
+                      "company_name": "Zuiderveld Health B.V.", "role": "Biostatistician", "company_size": "250-999",
+                      "tried_tabpfn": "Just started exploring", "use_case": "Predict patient readmission from hospital records",
+                      "signup_date": day(10 - offset).isoformat()})
+    companies.append(("Zuiderveld Health B.V.", "healthcare", "Netherlands"))
+
+    # --- Expected to fool the v1 keyword rules (honest limits) ---
+    # "Data" in the title makes a non-technical role look technical.
+    add("Kronfeld Kliniken AG", "healthcare", "Germany",
+        [(0, "Data Protection Officer", "Not yet", "GDPR review of AI tools before procurement")], "1000+", day(8))
+    # Use cases written in German -> not recognised.
+    add("Isarbank AG", "finance", "Germany",
+        [(0, "Senior Data Scientist", "Tried it a few times", "Betrugserkennung bei Kartenzahlungen")], "1000+", day(5))
+    add("Lechwerk Maschinenbau GmbH", "industrials", "Germany",
+        [(0, "R&D Engineer", "Just started exploring", "Vorhersage von Maschinenausfällen")], "250-999", day(13))
+    # Typos and jargon -> partly missed.
+    add("Penrose Retail Analytics Inc", "tech", "United States",
+        [(0, "Data Scientist", "Just started exploring", "forcasting sales per region")], "250-999", day(6))
+    add("Thames Mutual plc", "finance", "United Kingdom",
+        [(0, "Quantitative Analyst", "Tried it a few times", "PD/LGD models for IFRS 9")], "1000+", day(15))
+    # Same company typed 3 different ways -> a hot account split in three (and enrichment only knows one spelling).
+    for offset, name, role in [(0, "Altmark Insurance AG", "Data Scientist"), (4, "Altmark Insurance", "Head of Analytics"),
+                               (9, "ALTMARK Insurance AG", "Risk Analyst")]:
+        add(name, None, "Germany", [(0, role, "Just started exploring", "Claims fraud detection on policy data")],
+            "1000+", day(14 - offset), domain="altmark-insurance.example")
+    companies.append(("Altmark Insurance AG", "finance", "Germany"))
+    # A partner, not a client: wants to build TabPFN into its own product (no partner route in v1).
+    add("Vantor Data Platform Inc", "tech", "United States",
+        [(0, "Head of Partnerships", "Tried it a few times", "Integrate TabPFN into our ML platform for our customers")],
+        "250-999", day(4))
+    # Uses TabPFN through a marketplace, so ticks "Not yet" (attribution blind spot).
+    add("Rheingold Logistik SE", "industrials", "Germany",
+        [(0, "Data Scientist", "Not yet", "We already run TabPFN through Databricks for demand forecasting")],
+        "1000+", day(2))
+    add("Corvane Utilities Corp", "energy", "United States",
+        [(0, "Analytics Lead", "Not yet", "Using TabPFN in SAP for anomaly detection on meter data")], "1000+", day(11))
+
+    return leads, companies
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 def main():
     all_leads, all_companies = [], []
     groups = [regular_leads(industry, count) for industry, count in
-              [("finance", 16), ("healthcare", 11), ("industrials", 11), ("energy", 4), ("tech", 10)]]
-    groups += [noise_leads(), planted_patterns()]
+              [("finance", 4), ("healthcare", 3), ("industrials", 3), ("energy", 1), ("tech", 2)]]
+    groups += [noise_leads(), planted_patterns(), tricky_leads()]
     for leads, companies in groups:
         all_leads += leads
         all_companies += companies
