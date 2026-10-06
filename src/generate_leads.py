@@ -7,8 +7,12 @@ Everything here is invented with the Faker library: no real people, no real emai
   the addresses are random and nothing is ever sent to them.
 
 Outputs:
-  data/fake_leads.csv          the form fields + signup_date (what the CRM would hold)
-  data/company_enrichment.csv  company_name -> industry (stands in for Clearbit/Apollo)
+  data/form_submissions.csv    the 8 form fields + signup_date (what the CRM would hold)
+  data/company_enrichment.csv  company_name -> industry, country (stands in for Clearbit/Apollo).
+                               A few companies are deliberately missing, like in real life.
+
+Some patterns are PLANTED on purpose so the demo can show detection working
+(hot accounts, a hot segment, consultancies, academics...). See planted_patterns().
 
 Run:  python src/generate_leads.py
 """
@@ -29,62 +33,72 @@ import config  # noqa: E402
 
 SEED = 42                      # same seed -> exactly the same leads every run
 TODAY = date(2026, 10, 5)      # fixed "today" so the demo never changes
-DAYS_BACK = 60                 # sign-ups are spread over the last 60 days
+DAYS_BACK = 27                 # sign-ups are spread over the last 4 weeks
 
 random.seed(SEED)
 Faker.seed(SEED)
-fake = Faker(["de_DE", "en_US", "en_GB"])
+
+# Country -> Faker language for names, and typical legal forms for company names.
+COUNTRIES = {
+    "Germany": ("de_DE", ["GmbH", "AG", "SE"]),
+    "Austria": ("de_DE", ["GmbH", "AG"]),
+    "Switzerland": ("de_DE", ["AG"]),
+    "United Kingdom": ("en_GB", ["Ltd", "plc"]),
+    "France": ("fr_FR", ["SAS", "SA"]),
+    "Netherlands": ("nl_NL", ["B.V."]),
+    "United States": ("en_US", ["Inc", "LLC", "Corp"]),
+}
+COUNTRY_WEIGHTS = {"Germany": 34, "United States": 30, "United Kingdom": 12, "France": 7,
+                   "Netherlands": 7, "Switzerland": 6, "Austria": 4}
+fake = Faker([locale for locale, _ in COUNTRIES.values()])
 
 # ---------------------------------------------------------------------------
-# Building blocks: fake company name parts, roles and use-case sentences
+# Building blocks: company name parts, roles and use-case sentences
 # ---------------------------------------------------------------------------
 COMPANY_SUFFIXES = {
-    "finance": ["Bank", "Kapital", "Credit Partners", "Versicherung", "Leasing", "Finanz", "Asset Management"],
-    "healthcare": ["Klinikum", "Health", "MedTech", "Diagnostics", "Pharma", "Care Group"],
-    "industrials": ["Maschinenbau", "Industries", "Antriebstechnik", "Robotics", "Automation", "Werke"],
-    "energy": ["Energie", "Power", "Grid Services", "Solar", "Stadtwerke", "Wind"],
+    "finance": ["Bank", "Capital", "Credit", "Insurance", "Leasing", "Finance", "Asset Management"],
+    "healthcare": ["Health", "MedTech", "Diagnostics", "Pharma", "Care Group", "Clinics"],
+    "industrials": ["Industries", "Manufacturing", "Robotics", "Automation", "Machinery", "Components"],
+    "energy": ["Energy", "Power", "Grid", "Solar", "Utilities", "Wind"],
     "tech": ["Software", "Analytics", "Labs", "Cloud", "Commerce", "Apps"],
-    "other": ["Marketing Agentur", "Retail", "Consulting", "Events", "Media", "Logistics"],
+    "other": ["Retail", "Media", "Logistics", "Events", "Agency", "Hospitality"],
 }
-LEGAL_FORMS = ["GmbH", "AG", "Ltd", "Inc", "SE", ""]
 
-STRONG_ROLES = {
-    "finance": ["Head of Credit Risk", "Credit Risk Analyst", "Quantitative Analyst", "Head of Data Science",
-                "Senior Data Scientist", "Risk Modelling Lead", "Fraud Analytics Manager"],
-    "healthcare": ["Clinical Data Scientist", "Head of AI", "Biostatistician", "R&D Lead",
-                   "Machine Learning Engineer", "Director of Data & Analytics"],
-    "industrials": ["R&D Engineer", "Head of Data Science", "Machine Learning Engineer",
-                    "Reliability Data Analyst", "VP of AI", "Process Data Scientist"],
-    "energy": ["Data Scientist", "Head of Analytics", "Forecasting Analyst", "ML Engineer", "R&D Manager"],
-    "tech": ["ML Engineer", "Data Scientist", "Head of AI", "Staff Machine Learning Engineer",
-             "Analytics Lead", "AI Research Scientist"],
+TECHNICAL_ROLES = {
+    "finance": ["Credit Risk Analyst", "Quantitative Analyst", "Senior Data Scientist", "Risk Modelling Lead",
+                "Fraud Analytics Manager", "ML Engineer"],
+    "healthcare": ["Clinical Data Scientist", "Biostatistician", "R&D Lead", "Machine Learning Engineer",
+                   "Head of AI"],
+    "industrials": ["R&D Engineer", "Data Scientist", "Machine Learning Engineer", "Reliability Data Analyst",
+                    "Process Data Scientist"],
+    "energy": ["Data Scientist", "Head of Analytics", "ML Engineer", "R&D Manager"],
+    "tech": ["ML Engineer", "Data Scientist", "Head of AI", "Staff Machine Learning Engineer", "Analytics Lead"],
 }
-WEAK_ROLES = ["Marketing Manager", "Sales Director", "HR Business Partner", "Procurement Manager",
-              "Product Manager", "Office Manager", "Account Manager", "CFO", "IT Administrator"]
+BUSINESS_ROLES = ["Innovation Manager", "Head of Strategy", "Product Manager", "Head of Operations",
+                  "Procurement Manager", "Business Development Manager", "CTO", "CIO"]
+OTHER_ROLES = ["Marketing Manager", "Sales Director", "HR Business Partner", "Office Manager",
+               "Account Manager", "IT Administrator", "Finance Manager"]
 
 USE_CASE_TEXTS = {
     "risk_credit": [
         "Credit default prediction on our loan portfolio",
         "We want to improve our PD models for SME lending",
         "Underwriting decisions on tabular applicant data",
-        "Credit risk scoring, currently using XGBoost",
     ],
     "fraud": [
         "Fraud detection on card transactions",
         "Flagging suspicious payments in real time",
         "Anti money laundering (AML) alert prioritisation",
-        "Chargeback and fraud prediction for our merchants",
     ],
     "anomaly_maintenance": [
         "Predictive maintenance from machine sensor data",
-        "Detect anomalies in production line measurements",
+        "Detect anomalies in assembly line measurements",
         "Predict pump failure before it happens",
         "Reduce unplanned downtime using sensor logs",
     ],
     "diagnostics": [
         "Predict patient readmission from hospital records",
         "Support diagnosis from lab results",
-        "Clinical risk prediction on structured patient data",
         "Early disease detection from tabular health data",
     ],
     "churn": [
@@ -93,10 +107,9 @@ USE_CASE_TEXTS = {
         "Improve retention by predicting churn earlier",
     ],
     "forecasting": [
-        "Energy demand forecasting for our grid",
         "Forecast spare part demand across warehouses",
-        "Time series forecasting of electricity load",
         "Sales forecast per store and product",
+        "Demand planning for our product lines",
     ],
     "vague": [
         "Just exploring what TabPFN can do",
@@ -107,13 +120,13 @@ USE_CASE_TEXTS = {
     ],
 }
 
-# Which use cases each industry tends to have.
+# Which use cases each industry tends to have (spread out so no accidental hot segment appears).
 INDUSTRY_USE_CASES = {
-    "finance": ["risk_credit", "risk_credit", "fraud", "fraud", "churn", "vague"],
-    "healthcare": ["diagnostics", "diagnostics", "forecasting", "vague"],
-    "industrials": ["anomaly_maintenance", "anomaly_maintenance", "forecasting", "vague"],
-    "energy": ["forecasting", "forecasting", "anomaly_maintenance", "vague"],
-    "tech": ["churn", "churn", "fraud", "forecasting", "vague"],
+    "finance": ["risk_credit", "fraud", "churn", "forecasting", "vague", "vague"],
+    "healthcare": ["diagnostics", "diagnostics", "forecasting", "churn", "vague"],
+    "industrials": ["anomaly_maintenance", "forecasting", "churn", "vague"],
+    "energy": ["anomaly_maintenance", "churn", "vague"],
+    "tech": ["churn", "fraud", "forecasting", "vague"],
 }
 
 # Typical company sizes per industry (weights for 1-49, 50-249, 250-999, 1000+).
@@ -127,7 +140,8 @@ SIZE_WEIGHTS = {
 }
 
 # Most people have not tried TabPFN yet (weights follow config.TRIED_TABPFN_OPTIONS order).
-TRIED_WEIGHTS = [10, 20, 30, 40]
+# "Already using" is 0 here: every already-using lead is planted below, so the commercial-use alerts stay meaningful.
+TRIED_WEIGHTS = [0, 20, 35, 45]
 
 PERSONAL_DOMAINS = ["gmail.com", "gmail.com", "gmail.com", "yahoo.com", "outlook.com", "gmx.de", "web.de"]
 
@@ -145,48 +159,63 @@ def ascii_slug(text, sep="."):
     return sep.join(words)
 
 
+def random_country():
+    return random.choices(list(COUNTRY_WEIGHTS), weights=list(COUNTRY_WEIGHTS.values()))[0]
+
+
+def clean_last_name(name):
+    """Drop suffixes like 'II' or 'MD', but keep Dutch names like 'de Vries' whole."""
+    words = [w for w in name.split() if w not in ("II", "III", "IV", "Jr.", "Sr.", "MD", "DDS", "PhD", "DVM")]
+    return " ".join(words)
+
+
+def person_name(country):
+    """First and last name from the same country, e.g. 'Anna Schneider' or 'Tom Baker'."""
+    locale = COUNTRIES[country][0]
+    return fake[locale].first_name(), clean_last_name(fake[locale].last_name())
+
+
 used_company_names = set()
 
 
-def new_company(industry):
-    """A unique, made-up company name such as 'Hoffmann Kapital AG'."""
+def new_company(industry, country):
+    """A unique, made-up company name such as 'Hoffmann Capital AG'."""
+    locale, legal_forms = COUNTRIES[country]
     while True:
-        name = f"{fake.last_name()} {random.choice(COMPANY_SUFFIXES[industry])} {random.choice(LEGAL_FORMS)}".strip()
+        name = f"{clean_last_name(fake[locale].last_name())} {random.choice(COMPANY_SUFFIXES[industry])} {random.choice(legal_forms)}"
         if name not in used_company_names:
             used_company_names.add(name)
             return name
 
 
-def company_email(first, last, company):
-    domain = ascii_slug(company.replace("GmbH", "").replace(" AG", "").replace(" SE", ""), sep="-")
-    return f"{ascii_slug(first)}.{ascii_slug(last)}@{domain}.example"
+def company_domain(company):
+    """'Hoffmann Capital AG' -> 'hoffmann-capital.example' (reserved domain, can never exist)."""
+    words = [w for w in company.split() if w not in ("GmbH", "AG", "SE", "Ltd", "plc", "SAS", "SA", "B.V.", "Inc", "LLC", "Corp")]
+    return ascii_slug(" ".join(words), sep="-") + ".example"
 
 
 def personal_email(first, last):
     return f"{ascii_slug(first)}.{ascii_slug(last)}{random.randint(1, 99)}@{random.choice(PERSONAL_DOMAINS)}"
 
 
-def random_date(days_back=DAYS_BACK):
-    return TODAY - timedelta(days=random.randint(0, days_back))
+def random_date():
+    return TODAY - timedelta(days=random.randint(0, DAYS_BACK))
 
 
-def use_case_for(industry):
-    return random.choice(USE_CASE_TEXTS[random.choice(INDUSTRY_USE_CASES[industry])])
+def random_tried(weights=TRIED_WEIGHTS):
+    return random.choices(config.TRIED_TABPFN_OPTIONS, weights=weights)[0]
 
 
-def person_name():
-    """First and last name from the same country, e.g. 'Anna Schneider' or 'Tom Baker'."""
-    locale = random.choice(["de_DE", "de_DE", "en_US", "en_GB"])
-    last = fake[locale].last_name().split(" ")[0]  # drop suffixes like 'II'
-    return fake[locale].first_name(), last
-
-
-def make_lead(company, role, size, tried, use_case, signup_date, email=None):
-    first, last = person_name()
+def make_lead(company, role, size, tried, use_case, signup_date, country, domain=None, personal=False):
+    first, last = person_name(country)
+    if personal:
+        email = personal_email(first, last)
+    else:
+        email = f"{ascii_slug(first)}.{ascii_slug(last)}@{domain or company_domain(company)}"
     return {
         "first_name": first,
         "last_name": last,
-        "email": email or company_email(first, last, company),
+        "email": email,
         "company_name": company,
         "role": role,
         "company_size": size,
@@ -199,93 +228,170 @@ def make_lead(company, role, size, tried, use_case, signup_date, email=None):
 # ---------------------------------------------------------------------------
 # Lead groups
 # ---------------------------------------------------------------------------
-def target_industry_leads(industry, count):
-    """Leads from target industries: mostly strong roles, some weak ones."""
+def regular_leads(industry, count):
+    """Leads from target industries: mostly technical roles, some business roles, a few others."""
     leads, companies = [], []
     for _ in range(count):
-        company = new_company(industry)
-        role = random.choice(STRONG_ROLES[industry]) if random.random() < 0.7 else random.choice(WEAK_ROLES)
+        country = random_country()
+        company = new_company(industry, country)
+        r = random.random()
+        if r < 0.6:
+            role = random.choice(TECHNICAL_ROLES[industry])
+        elif r < 0.8:
+            role = random.choice(BUSINESS_ROLES)
+        else:
+            role = random.choice(OTHER_ROLES)
         size = random.choices(config.COMPANY_SIZES, weights=SIZE_WEIGHTS[industry])[0]
-        tried = random.choices(config.TRIED_TABPFN_OPTIONS, weights=TRIED_WEIGHTS)[0]
-        leads.append(make_lead(company, role, size, tried, use_case_for(industry), random_date()))
-        companies.append((company, industry))
+        use_case = random.choice(USE_CASE_TEXTS[random.choice(INDUSTRY_USE_CASES[industry])])
+        leads.append(make_lead(company, role, size, random_tried(), use_case, random_date(), country))
+        companies.append((company, industry, country))
     return leads, companies
 
 
 def noise_leads():
-    """Students, personal-email sign-ups and irrelevant roles."""
+    """Students, freelancers with personal emails, and irrelevant roles."""
     leads, companies = [], []
 
-    # 8 students: university emails or Gmail, thesis-style use cases.
-    for _ in range(8):
-        uni = f"{random.choice(['Technische Universitaet', 'University of', 'Hochschule'])} {fake.city()}"
+    # 6 students: university emails or Gmail, thesis-style use cases.
+    for _ in range(6):
+        country = random.choice(["Germany", "United Kingdom", "United States", "Netherlands"])
+        uni = f"University of {fake[COUNTRIES[country][0]].city()}"
         role = random.choice(["Student", "MSc Student", "PhD Candidate", "Working Student Data Science", "Intern"])
         use_case = random.choice(["Master thesis on tabular ML", "Course project", "Comparing TabPFN to XGBoost for my thesis",
                                   "Want to learn more"])
-        first, last = person_name()
-        email = personal_email(first, last) if random.random() < 0.5 else company_email(first, last, uni)
-        lead = make_lead(uni, role, random.choice(["1000+", "250-999"]),
-                         random.choices(config.TRIED_TABPFN_OPTIONS, weights=[5, 25, 35, 35])[0],
-                         use_case, random_date(), email=email)
-        lead["first_name"], lead["last_name"] = first, last
-        leads.append(lead)
-        companies.append((uni, "other"))
+        leads.append(make_lead(uni, role, random.choice(["1000+", "250-999"]), random_tried([5, 25, 35, 35]),
+                               use_case, random_date(), country, personal=random.random() < 0.5))
+        companies.append((uni, "education", country))
 
-    # 7 freelancers / tiny startups signing up with a personal email.
-    for _ in range(7):
-        company = random.choice(["Freelance", "Self-employed", new_company("tech")])
-        first, last = person_name()
-        role = random.choice(["Freelance Data Scientist", "Founder", "Consultant", "Developer"])
-        lead = make_lead(company, role, "1-49", random.choices(config.TRIED_TABPFN_OPTIONS, weights=TRIED_WEIGHTS)[0],
-                         random.choice(USE_CASE_TEXTS["vague"] + USE_CASE_TEXTS["churn"]), random_date(),
-                         email=personal_email(first, last))
-        lead["first_name"], lead["last_name"] = first, last
-        leads.append(lead)
-        companies.append((company, "other" if company in ("Freelance", "Self-employed") else "tech"))
+    # 5 freelancers / self-employed with personal emails. Not in the enrichment table (nothing to look up).
+    for _ in range(5):
+        country = random.choice(["Germany", "United States", "United Kingdom"])
+        company = random.choice(["Self-employed", "Self-employed", "Freelance"])
+        role = random.choice(["Freelance Data Scientist", "Consultant", "Developer", "Founder"])
+        use_case = random.choice(USE_CASE_TEXTS["vague"] + ["Small side project with tabular data"])
+        leads.append(make_lead(company, role, "1-49", random_tried(), use_case, random_date(), country, personal=True))
 
-    # 7 irrelevant roles at non-target companies.
-    for _ in range(7):
-        company = new_company("other")
-        lead = make_lead(company, random.choice(WEAK_ROLES), random.choices(config.COMPANY_SIZES, weights=SIZE_WEIGHTS["other"])[0],
+    # 6 irrelevant roles at non-target companies.
+    for _ in range(6):
+        country = random_country()
+        company = new_company("other", country)
+        lead = make_lead(company, random.choice(OTHER_ROLES), random.choices(config.COMPANY_SIZES, weights=SIZE_WEIGHTS["other"])[0],
                          "Not yet", random.choice(USE_CASE_TEXTS["vague"] + ["Marketing campaign analysis", "Event planning"]),
-                         random_date())
+                         random_date(), country)
         leads.append(lead)
-        companies.append((company, "other"))
+        companies.append((company, "other", country))
 
     return leads, companies
 
 
-def planted_accounts():
-    """2 hot accounts + 1 near miss, planted on purpose to show detection works."""
+def planted_patterns():
+    """Patterns planted on purpose so the demo can show detection working."""
     leads, companies = [], []
 
-    # Hot account A: a large bank, 4 people within 10 days.
-    bank, start = "Nordhafen Bank AG", TODAY - timedelta(days=12)
-    for offset, role, uc, tried in [
-        (0, "Head of Credit Risk", "Credit default prediction on our loan portfolio", "Just started exploring"),
-        (3, "Senior Data Scientist", "We want to improve our PD models for SME lending", "Tried it a few times"),
-        (7, "Fraud Analytics Manager", "Fraud detection on card transactions", "Not yet"),
-        (10, "Head of Data Science", "Credit risk scoring, currently using XGBoost", "Yes, I'm already using it"),
-    ]:
-        leads.append(make_lead(bank, role, "1000+", tried, uc, start + timedelta(days=offset)))
-    companies.append((bank, "finance"))
+    def add(company, industry, country, people, size, start, domain=None):
+        """people = list of (day offset, role, tried_tabpfn, use_case)."""
+        for offset, role, tried, use_case in people:
+            leads.append(make_lead(company, role, size, tried, use_case, start + timedelta(days=offset), country, domain=domain))
+        if industry:
+            companies.append((company, industry, country))
 
-    # Hot account B: a mid-size manufacturer, 3 people within 12 days.
-    maker, start = "Rheinberg Antriebstechnik GmbH", TODAY - timedelta(days=20)
-    for offset, role, uc, tried in [
-        (0, "R&D Engineer", "Predictive maintenance from machine sensor data", "Tried it a few times"),
-        (5, "Reliability Data Analyst", "Reduce unplanned downtime using sensor logs", "Just started exploring"),
-        (12, "Head of Operations", "Predict pump failure before it happens", "Not yet"),
-    ]:
-        leads.append(make_lead(maker, role, "250-999", tried, uc, start + timedelta(days=offset)))
-    companies.append((maker, "industrials"))
+    # HOT ACCOUNT A (buying group): a data scientist first, Head of Data ~2 weeks later (inside 14 days).
+    add("Nordhafen Bank AG", "finance", "Germany", [
+        (0, "Senior Data Scientist", "Tried it a few times", "Credit default prediction on our loan portfolio, must run on-prem"),
+        (4, "Credit Risk Analyst", "Just started exploring", "We want to improve our PD models for SME lending"),
+        (8, "ML Engineer", "Tried it a few times", "Fraud detection on card transactions"),
+        (13, "Head of Data", "Not yet", "Credit risk models for our retail lending book"),
+    ], "1000+", TODAY - timedelta(days=15))
 
-    # Near miss: 3 people from one company, but spread over 36 days -> must NOT be flagged.
-    slow, start = "Lumio Analytics GmbH", TODAY - timedelta(days=50)
-    for offset, role in [(0, "Data Scientist"), (18, "Product Manager"), (36, "ML Engineer")]:
-        leads.append(make_lead(slow, role, "50-249", "Just started exploring",
-                               "Customer churn prediction for our subscription business", start + timedelta(days=offset)))
-    companies.append((slow, "tech"))
+    # HOT ACCOUNT B: only technical people (no buying group yet).
+    add("Cobalt Ridge Manufacturing Inc", "industrials", "United States", [
+        (0, "R&D Engineer", "Tried it a few times", "Predictive maintenance from machine sensor data"),
+        (5, "Reliability Data Analyst", "Just started exploring", "Reduce unplanned downtime using sensor logs"),
+        (11, "Process Data Scientist", "Not yet", "Predict pump failure before it happens"),
+    ], "250-999", TODAY - timedelta(days=12))
+
+    # NEAR MISS: 3 people from one company, but spread over 27 days -> must NOT be flagged.
+    add("Lumio Analytics GmbH", "tech", "Germany", [
+        (0, "Data Scientist", "Just started exploring", "Customer churn prediction for our subscription business"),
+        (15, "Product Manager", "Just started exploring", "Improve retention by predicting churn earlier"),
+        (27, "ML Engineer", "Tried it a few times", "Which customers will cancel next quarter?"),
+    ], "50-249", TODAY - timedelta(days=27))
+
+    # HOT SEGMENT: 8 energy companies, all forecasting from smart-meter data.
+    segment_texts = [
+        "Load forecasting from smart meter data",
+        "Forecast household energy consumption from meter readings",
+        "Short-term demand forecasting for our grid",
+        "Forecasting electricity demand per substation",
+        "Smart meter data: forecast peak load",
+        "Energy demand forecasting for our customers",
+        "Forecast heat pump demand from meter data",
+        "Forecasting EV charging load from meter data",
+    ]
+    for text in segment_texts:
+        country = random.choice(["Germany", "Netherlands", "United Kingdom", "Austria", "United States"])
+        company = new_company("energy", country)
+        role = random.choice(TECHNICAL_ROLES["energy"] + ["Head of Operations"])
+        add(company, "energy", country, [(0, role, random_tried(), text)],
+            random.choice(["250-999", "1000+", "50-249"]), TODAY - timedelta(days=random.randint(0, 20)))
+
+    # CONSULTANCIES with target use cases (client work needs a commercial license).
+    add("Brightline Advisory Ltd", "consulting", "United Kingdom",
+        [(0, "Data Consultant", "Tried it a few times", "Fraud detection models for a banking client")],
+        "1-49", TODAY - timedelta(days=6))
+    add("Kessler Consulting GmbH", "consulting", "Germany",
+        [(0, "Senior Consultant Analytics", "Just started exploring", "Credit risk scoring for an insurance client")],
+        "50-249", TODAY - timedelta(days=17))
+    add("Harbor Point Consulting LLC", "consulting", "United States",
+        [(0, "Managing Consultant", "Not yet", "Churn prediction for a telecom client, compared to our AutoML stack")],
+        "250-999", TODAY - timedelta(days=9))
+
+    # ACADEMICS (university domains, postdoc/professor roles) -> Research / community.
+    add("University of Lindenau", "education", "Germany",
+        [(0, "Postdoc", config.ALREADY_USING, "Diagnosis support from clinical lab results")],
+        "1000+", TODAY - timedelta(days=3), domain="uni-lindenau.example")
+    add("Stanbridge University", "education", "United States",
+        [(0, "Assistant Professor", "Tried it a few times", "Teaching tabular ML, benchmarking against XGBoost")],
+        "1000+", TODAY - timedelta(days=19), domain="stanbridge.edu.example")
+    add("Northgate College", "education", "United Kingdom",
+        [(0, "Lecturer in Statistics", "Just started exploring", "Research on small tabular datasets")],
+        "250-999", TODAY - timedelta(days=11), domain="northgate.ac.uk.example")
+
+    # SMALL COMPANIES ALREADY USING TabPFN -> Solutions Engineer + commercial-use signal.
+    add("Velora Analytics GmbH", "tech", "Germany",
+        [(0, "Data Scientist", config.ALREADY_USING, "Customer churn prediction in production for our SaaS clients")],
+        "1-49", TODAY - timedelta(days=2))
+    add("Payflux Inc", "finance", "United States",
+        [(0, "ML Engineer", config.ALREADY_USING, "Chargeback and fraud prediction for our merchants")],
+        "50-249", TODAY - timedelta(days=8))
+
+    # LARGE COMPANIES with deployment/compliance or comparison keywords.
+    add("Helvia Health AG", "healthcare", "Switzerland",
+        [(0, "Clinical Data Scientist", "Tried it a few times", "Predict patient readmission, GDPR compliant deployment needed")],
+        "1000+", TODAY - timedelta(days=5))
+    add("Ostwind Versicherung AG", "finance", "Germany",
+        [(0, "Head of Credit Risk", config.ALREADY_USING, "Underwriting model with regulatory approval, private cloud only")],
+        "1000+", TODAY - timedelta(days=1))
+    add("Granite Peak Power Corp", "energy", "United States",
+        [(0, "Innovation Manager", "Not yet", "Predictive maintenance for turbines, needs on-premise deployment")],
+        "1000+", TODAY - timedelta(days=14))
+    add("Maribel Commerce SAS", "tech", "France",
+        [(0, "Head of AI", "Just started exploring", "Churn model, looking for an alternative to LightGBM")],
+        "250-999", TODAY - timedelta(days=10))
+
+    # GMAIL USER ALREADY USING TabPFN with a strong use case (penalised, but not excluded).
+    leads.append(make_lead("Self-employed", "Freelance Data Scientist", "1-49", config.ALREADY_USING,
+                           "Churn prediction for e-commerce clients", TODAY - timedelta(days=4), "Germany", personal=True))
+
+    # ENRICHMENT MISSING: these companies exist in the form data but not in the enrichment table.
+    for industry, role, text in [
+        ("finance", "Risk Analyst", "Credit default prediction on our loan portfolio"),
+        ("industrials", "Operations Manager", "Detect anomalies in assembly line measurements"),
+        ("tech", "Data Engineer", "Interested in tabular foundation models in general"),
+    ]:
+        country = random_country()
+        add(new_company(industry, country), None, country,
+            [(0, role, random_tried(), text)], random.choice(config.COMPANY_SIZES), random_date())
 
     return leads, companies
 
@@ -295,25 +401,24 @@ def planted_accounts():
 # ---------------------------------------------------------------------------
 def main():
     all_leads, all_companies = [], []
-    for industry, count in [("finance", 20), ("healthcare", 13), ("industrials", 13), ("energy", 10), ("tech", 14)]:
-        leads, companies = target_industry_leads(industry, count)
+    groups = [regular_leads(industry, count) for industry, count in
+              [("finance", 16), ("healthcare", 11), ("industrials", 11), ("energy", 4), ("tech", 10)]]
+    groups += [noise_leads(), planted_patterns()]
+    for leads, companies in groups:
         all_leads += leads
         all_companies += companies
-    for group in (noise_leads(), planted_accounts()):
-        all_leads += group[0]
-        all_companies += group[1]
 
     leads_df = pd.DataFrame(all_leads).sort_values("signup_date").reset_index(drop=True)
-    enrichment_df = pd.DataFrame(all_companies, columns=["company_name", "industry"]).drop_duplicates("company_name")
+    enrichment_df = (pd.DataFrame(all_companies, columns=["company_name", "industry", "country"])
+                     .drop_duplicates("company_name").sort_values("company_name"))
 
     data_dir = ROOT / "data"
-    leads_df.to_csv(data_dir / "fake_leads.csv", index=False)
-    enrichment_df.to_csv(data_dir / "company_enrichment.csv", index=False)
+    # utf-8-sig so Excel shows German umlauts (ä, ö, ü) correctly.
+    leads_df.to_csv(data_dir / "form_submissions.csv", index=False, encoding="utf-8-sig")
+    enrichment_df.to_csv(data_dir / "company_enrichment.csv", index=False, encoding="utf-8-sig")
 
-    print(f"Wrote {len(leads_df)} fake leads to data/fake_leads.csv")
+    print(f"Wrote {len(leads_df)} fake leads to data/form_submissions.csv")
     print(f"Wrote {len(enrichment_df)} companies to data/company_enrichment.csv")
-    print("Planted hot accounts: Nordhafen Bank AG (4 people), Rheinberg Antriebstechnik GmbH (3 people)")
-    print("Planted near miss (should NOT be flagged): Lumio Analytics GmbH (3 people over 36 days)")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,104 @@
+﻿first_name,last_name,email,company_name,role,company_size,tried_tabpfn,use_case,signup_date
+Donald,Lowe,donald.lowe@green-leasing.example,Green Leasing Ltd,Office Manager,50-249,Not yet,Improve retention by predicting churn earlier,2026-09-08
+James,Santos,james.santos@johnson-capital.example,Johnson Capital Corp,ML Engineer,250-999,Not yet,Customer churn prediction for our subscription business,2026-09-08
+Dietlinde,Mosemann,dietlinde.mosemann@kranz-commerce.example,Kranz Commerce AG,ML Engineer,1000+,Just started exploring,Demand planning for our product lines,2026-09-08
+Sylvie,Rudolph,sylvie.rudolph@lumio-analytics.example,Lumio Analytics GmbH,Data Scientist,50-249,Just started exploring,Customer churn prediction for our subscription business,2026-09-08
+Benthe,Pieters,benthe.pieters@kronenberg-health.example,Kronenberg Health B.V.,Finance Manager,250-999,Not yet,Early disease detection from tabular health data,2026-09-09
+Frederik,Pechel,frederik.pechel@hartmann-solar.example,Hartmann Solar AG,Data Scientist,250-999,Just started exploring,Reduce unplanned downtime using sensor logs,2026-09-09
+Monique,Henderson,monique.henderson54@gmail.com,Self-employed,Developer,1-49,Just started exploring,Evaluating AI tools for the team,2026-09-09
+Roderich,Klotz,roderich.klotz@saeuberlich-wind.example,Säuberlich Wind GmbH,Sales Director,1000+,Tried it a few times,Reduce unplanned downtime using sensor logs,2026-09-12
+Chelsea,Hernandez,chelsea.hernandez@university-of-port-colleenhaven.example,University of Port Colleenhaven,Working Student Data Science,250-999,Not yet,Want to learn more,2026-09-12
+Kayleigh,van Laar,kayleigh.van.laar@broekhoven-asset-management.example,Broekhoven Asset Management B.V.,Business Development Manager,50-249,Just started exploring,Forecast spare part demand across warehouses,2026-09-12
+Bertram,Hein,bertram.hein@wulf-machinery.example,Wulf Machinery GmbH,CTO,1000+,Just started exploring,Which customers will cancel next quarter?,2026-09-13
+Stephanie,Liu,stephanie.liu@chavez-analytics.example,Chavez Analytics Corp,Head of Strategy,250-999,Not yet,Fraud detection on card transactions,2026-09-13
+Josip,Ziegert,josip.ziegert@krebs-automation.example,Krebs Automation AG,Operations Manager,50-249,Not yet,Detect anomalies in assembly line measurements,2026-09-13
+Siegfried,Hartmann,siegfried.hartmann@ritter-credit.example,Ritter Credit AG,Business Development Manager,50-249,Not yet,Customer churn prediction for our subscription business,2026-09-13
+Fredo,Walter,fredo.walter@hauffer-insurance.example,Hauffer Insurance GmbH,Quantitative Analyst,250-999,Not yet,Just exploring what TabPFN can do,2026-09-13
+Heini,Sölzer,heini.soelzer@jopich-industries.example,Jopich Industries SE,Machine Learning Engineer,250-999,Just started exploring,Demand planning for our product lines,2026-09-14
+Melanie,Munoz,melanie.munoz@davis-insurance.example,Davis Insurance Corp,Fraud Analytics Manager,1000+,Not yet,Underwriting decisions on tabular applicant data,2026-09-14
+Madelief,le Guellec,madelief.le.guellec@van-noort-energy.example,van Noort Energy B.V.,Data Scientist,1000+,Not yet,Load forecasting from smart meter data,2026-09-16
+Hans-Jochen,Tlustek,hans.jochen.tlustek@rust-care-group.example,Rust Care Group GmbH,Machine Learning Engineer,1000+,Just started exploring,Support diagnosis from lab results,2026-09-16
+Scott,Callahan,scott.callahan@stanbridge.edu.example,Stanbridge University,Assistant Professor,1000+,Tried it a few times,"Teaching tabular ML, benchmarking against XGBoost",2026-09-16
+Vincent,White,vincent.white@baker-software.example,Baker Software Corp,ML Engineer,50-249,Not yet,Not sure yet,2026-09-16
+Marten,Wilmsen,marten.wilmsen@stolze-machinery.example,Stolze Machinery GmbH,Marketing Manager,250-999,Tried it a few times,Sales forecast per store and product,2026-09-17
+Magdalene,Jopich,magdalene.jopich@beckmann-robotics.example,Beckmann Robotics AG,Machine Learning Engineer,250-999,Just started exploring,Predictive maintenance from machine sensor data,2026-09-17
+Fridolin,Löchel,fridolin.loechel@kessler-consulting.example,Kessler Consulting GmbH,Senior Consultant Analytics,50-249,Just started exploring,Credit risk scoring for an insurance client,2026-09-18
+Angel,Hill,angel.hill@fowler-bank.example,Fowler Bank Corp,Quantitative Analyst,50-249,Not yet,Underwriting decisions on tabular applicant data,2026-09-18
+Brigitte,Hartmann,brigitte.hartmann@stroh-machinery.example,Stroh Machinery GmbH,Innovation Manager,50-249,Not yet,Not sure yet,2026-09-19
+Robert,Brown,robert.brown@conner-commerce.example,Conner Commerce Inc,Analytics Lead,1-49,Just started exploring,Improve retention by predicting churn earlier,2026-09-19
+Britt,van der Hoeven,britt.van.der.hoeven31@gmail.com,University of Geesteren,PhD Candidate,250-999,Not yet,Course project,2026-09-19
+Stephan,Klapp,stephan.klapp@sorgatz-utilities.example,Sorgatz Utilities SE,ML Engineer,1000+,Tried it a few times,Short-term demand forecasting for our grid,2026-09-20
+Ahmed,Boucsein,ahmed.boucsein@nordhafen-bank.example,Nordhafen Bank AG,Senior Data Scientist,1000+,Tried it a few times,"Credit default prediction on our loan portfolio, must run on-prem",2026-09-20
+Sylvio,Franke,sylvio.franke@hornig-cloud.example,Hornig Cloud SE,Marketing Manager,50-249,Not yet,Anti money laundering (AML) alert prioritisation,2026-09-20
+Brian,Valdez,brian.valdez@shields-wind.example,Shields Wind LLC,Head of Operations,50-249,Not yet,Smart meter data: forecast peak load,2026-09-20
+Gabriel,Tucker,gabriel.tucker@granite-peak-power.example,Granite Peak Power Corp,Innovation Manager,1000+,Not yet,"Predictive maintenance for turbines, needs on-premise deployment",2026-09-21
+Amanda,Martinez,amanda.martinez17@outlook.com,Self-employed,Founder,1-49,Tried it a few times,Small side project with tabular data,2026-09-21
+Donna,Mejia,donna.mejia@jones-medtech.example,Jones MedTech Corp,Head of Operations,1000+,Not yet,Improve retention by predicting churn earlier,2026-09-21
+Julie,Patterson,julie.patterson@ryan-industries.example,Ryan Industries LLC,Data Scientist,1000+,Not yet,Improve retention by predicting churn earlier,2026-09-22
+Mark,Davies,mark.davies@taylor-cloud.example,Taylor Cloud Ltd,Procurement Manager,50-249,Just started exploring,Which customers will cancel next quarter?,2026-09-22
+Lisa,Spence,lisa.spence63@gmail.com,Freelance,Consultant,1-49,Just started exploring,Evaluating AI tools for the team,2026-09-22
+Bogdan,Hendriks,bogdan.hendriks54@yahoo.com,University of Gerolzhofen,Working Student Data Science,250-999,Just started exploring,Want to learn more,2026-09-22
+Jan-Peter,Röhrdanz,jan.peter.roehrdanz@raedel-labs.example,Rädel Labs SE,Staff Machine Learning Engineer,50-249,Tried it a few times,Demand planning for our product lines,2026-09-22
+Dajana,Hartmann,dajana.hartmann@hein-retail.example,Hein Retail AG,Account Manager,50-249,Not yet,Evaluating AI tools for the team,2026-09-23
+Andrea,Baker,andrea.baker42@gmail.com,Self-employed,Founder,1-49,Tried it a few times,Interested in tabular foundation models in general,2026-09-23
+Matthew,Davis,matthew.davis@bernard-bank.example,Bernard Bank Inc,Sales Director,1000+,Not yet,Evaluating AI tools for the team,2026-09-23
+Christl,Mühle,christl.muehle@lumio-analytics.example,Lumio Analytics GmbH,Product Manager,50-249,Just started exploring,Improve retention by predicting churn earlier,2026-09-23
+Michele,Jones,michele.jones@cobalt-ridge-manufacturing.example,Cobalt Ridge Manufacturing Inc,R&D Engineer,250-999,Tried it a few times,Predictive maintenance from machine sensor data,2026-09-23
+Imke,Schüler,imke.schueler@nordhafen-bank.example,Nordhafen Bank AG,Credit Risk Analyst,1000+,Just started exploring,We want to improve our PD models for SME lending,2026-09-24
+Janina,Neureuther,janina.neureuther50@web.de,University of Borna,Intern,250-999,"Yes, I'm already using it",Want to learn more,2026-09-24
+Dominik,Dietz,dominik.dietz@grein-groth-utilities.example,Grein Groth Utilities GmbH,ML Engineer,50-249,Just started exploring,Forecast household energy consumption from meter readings,2026-09-24
+Georgina,Gibson,georgina.gibson@northgate.ac.uk.example,Northgate College,Lecturer in Statistics,250-999,Just started exploring,Research on small tabular datasets,2026-09-24
+Marcel,Maréchal,marcel.marechal@maribel-commerce.example,Maribel Commerce SAS,Head of AI,250-999,Just started exploring,"Churn model, looking for an alternative to LightGBM",2026-09-25
+Fenna,Kloppert,fenna.kloppert@keijser-labs.example,Keijser Labs B.V.,Head of AI,1-49,Not yet,Want to learn more,2026-09-25
+Janice,Hopkins,janice.hopkins@warner-leasing.example,Warner Leasing plc,Fraud Analytics Manager,250-999,Not yet,Credit default prediction on our loan portfolio,2026-09-25
+Vanessa,Phillips,vanessa.phillips@evans-diagnostics.example,Evans Diagnostics plc,Clinical Data Scientist,250-999,Just started exploring,Predict patient readmission from hospital records,2026-09-25
+Jadwiga,Kambs,jadwiga.kambs@kusch-power.example,Kusch Power AG,Head of Operations,1000+,Not yet,Forecast heat pump demand from meter data,2026-09-25
+Esmee,Vegt,esmee.vegt@university-of-s-gravendeel.example,University of 's-Gravendeel,Student,1000+,Tried it a few times,Comparing TabPFN to XGBoost for my thesis,2026-09-25
+Nicole,Day,nicole.day@porter-robotics.example,Porter Robotics Corp,R&D Engineer,50-249,Tried it a few times,Want to learn more,2026-09-25
+Maggie,Regnier,maggie.regnier@noel-commerce.example,Noël Commerce SA,Staff Machine Learning Engineer,250-999,Not yet,Interested in tabular foundation models in general,2026-09-26
+Isaiah,Ford,isaiah.ford@harbor-point-consulting.example,Harbor Point Consulting LLC,Managing Consultant,250-999,Not yet,"Churn prediction for a telecom client, compared to our AutoML stack",2026-09-26
+Juliana,Rörricht,juliana.roerricht@hentschel-components.example,Hentschel Components AG,Machine Learning Engineer,250-999,Tried it a few times,Sales forecast per store and product,2026-09-26
+Matthew,Chapman,matthew.chapman@walker-hospitality.example,Walker Hospitality Corp,Marketing Manager,250-999,Not yet,Interested in tabular foundation models in general,2026-09-26
+Eckard,Bolander,eckard.bolander@seidel-solar.example,Seidel Solar AG,ML Engineer,250-999,Not yet,Energy demand forecasting for our customers,2026-09-27
+Mary,Novak,mary.novak@payflux.example,Payflux Inc,ML Engineer,50-249,"Yes, I'm already using it",Chargeback and fraud prediction for our merchants,2026-09-27
+Raimund,Holsten,raimund.holsten@ditschlerin-clinics.example,Ditschlerin Clinics SE,Clinical Data Scientist,1000+,Just started exploring,Forecast spare part demand across warehouses,2026-09-27
+Jacek,Gröttner,jacek.groettner@doerr-solar.example,Dörr Solar AG,Head of Analytics,1000+,Just started exploring,Forecasting EV charging load from meter data,2026-09-27
+Dino,Wende,dino.wende@nohlmans-grid.example,Nohlmans Grid AG,Finance Manager,50-249,Just started exploring,Detect anomalies in assembly line measurements,2026-09-27
+Damaris,Holsten,damaris.holsten@meister-finance.example,Meister Finance AG,Product Manager,1000+,Just started exploring,Fraud detection on card transactions,2026-09-27
+John,Caldwell,john.caldwell@cobalt-ridge-manufacturing.example,Cobalt Ridge Manufacturing Inc,Reliability Data Analyst,250-999,Just started exploring,Reduce unplanned downtime using sensor logs,2026-09-28
+Branko,Hein,branko.hein@nordhafen-bank.example,Nordhafen Bank AG,ML Engineer,1000+,Tried it a few times,Fraud detection on card transactions,2026-09-28
+Sofia,van der Meer,sofia.van.der.meer@meyer-events.example,Meyer Events B.V.,IT Administrator,50-249,Not yet,Want to learn more,2026-09-28
+Madeleine,Guérin,madeleine.guerin@normand-health.example,Normand Health SAS,Head of AI,250-999,Just started exploring,Customer churn prediction for our subscription business,2026-09-28
+Naomi,Osterhoudt,naomi.osterhoudt@ernst-pharma.example,Ernst Pharma B.V.,Clinical Data Scientist,50-249,Just started exploring,Not sure yet,2026-09-28
+Giovanni,de Groot,giovanni.de.groot@van-der-linden-credit.example,van der Linden Credit B.V.,Credit Risk Analyst,1000+,Just started exploring,Improve retention by predicting churn earlier,2026-09-29
+Hollie,Lawson,hollie.lawson@mitchell-hospitality.example,Mitchell Hospitality Ltd,Finance Manager,1-49,Not yet,Interested in tabular foundation models in general,2026-09-29
+Karl,Wilkinson,karl.wilkinson@brightline-advisory.example,Brightline Advisory Ltd,Data Consultant,1-49,Tried it a few times,Fraud detection models for a banking client,2026-09-29
+Stephanie,Schwital,stephanie.schwital@hiller-diagnostics.example,Hiller Diagnostics AG,Head of AI,250-999,Tried it a few times,Customer churn prediction for our subscription business,2026-09-29
+Salvatore,Mosemann,salvatore.mosemann@loechel-solar.example,Löchel Solar AG,R&D Manager,1000+,Not yet,Forecasting electricity demand per substation,2026-09-30
+Zachary,Martinez,zachary.martinez@kim-media.example,Kim Media LLC,IT Administrator,1-49,Not yet,Want to learn more,2026-09-30
+Juan,Bolzmann,juan.bolzmann@kuehnert-industries.example,Kühnert Industries GmbH,Data Scientist,1000+,Just started exploring,Detect anomalies in assembly line measurements,2026-09-30
+Susan,Weller,susan.weller@helvia-health.example,Helvia Health AG,Clinical Data Scientist,1000+,Tried it a few times,"Predict patient readmission, GDPR compliant deployment needed",2026-09-30
+Gerold,Hande,gerold.hande@holsten-leasing.example,Holsten Leasing SE,Fraud Analytics Manager,250-999,Just started exploring,Evaluating AI tools for the team,2026-10-01
+Engin,Klotz,engin.klotz@university-of-arnstadt.example,University of Arnstadt,MSc Student,1000+,Just started exploring,Course project,2026-10-01
+Samira,Bonbach,samira.bonbach44@gmail.com,Self-employed,Freelance Data Scientist,1-49,"Yes, I'm already using it",Churn prediction for e-commerce clients,2026-10-01
+Sigismund,Karge,sigismund.karge@thanel-leasing.example,Thanel Leasing SE,ML Engineer,250-999,Tried it a few times,Evaluating AI tools for the team,2026-10-01
+Sherri,Walter,sherri.walter@clark-machinery.example,Clark Machinery Corp,Process Data Scientist,1-49,Tried it a few times,Improve retention by predicting churn earlier,2026-10-01
+Julie,Marsden,julie.marsden@price-medtech.example,Price MedTech Ltd,CIO,50-249,Tried it a few times,Which customers will cancel next quarter?,2026-10-02
+Sep,de Boer,sep.de.boer@thout-agency.example,Thout Agency B.V.,Sales Director,1-49,Not yet,Marketing campaign analysis,2026-10-02
+Nina,Hanegraaff,nina.hanegraaff@brumleve-grid.example,Brumleve Grid B.V.,CTO,250-999,Not yet,Want to learn more,2026-10-02
+Birgid,Hornig,birgid.hornig@budig-asset-management.example,Budig Asset Management GmbH,Fraud Analytics Manager,1000+,Just started exploring,Want to learn more,2026-10-02
+Patrizia,Bruder,patrizia.bruder@uni-lindenau.example,University of Lindenau,Postdoc,1000+,"Yes, I'm already using it",Diagnosis support from clinical lab results,2026-10-02
+Gaby,Reuter,gaby.reuter@velora-analytics.example,Velora Analytics GmbH,Data Scientist,1-49,"Yes, I'm already using it",Customer churn prediction in production for our SaaS clients,2026-10-03
+Ruben,Adelaar,ruben.adelaar@konings-finance.example,Konings Finance B.V.,Risk Analyst,50-249,Not yet,Credit default prediction on our loan portfolio,2026-10-03
+Justin,Horton,justin.horton@glover-apps.example,Glover Apps LLC,Data Engineer,1-49,Just started exploring,Interested in tabular foundation models in general,2026-10-03
+Katy,Freudenberger,katy.freudenberger@albers-finance.example,Albers Finance GmbH,Innovation Manager,250-999,Just started exploring,We want to improve our PD models for SME lending,2026-10-03
+Cengiz,Beckmann,cengiz.beckmann@nordhafen-bank.example,Nordhafen Bank AG,Head of Data,1000+,Not yet,Credit risk models for our retail lending book,2026-10-03
+Elli,Klotz,elli.klotz@schottin-diagnostics.example,Schottin Diagnostics AG,Head of AI,1000+,Just started exploring,Early disease detection from tabular health data,2026-10-03
+Rémy,Joly,remy.joly@meunier-components.example,Meunier Components SA,Reliability Data Analyst,250-999,Tried it a few times,Not sure yet,2026-10-03
+Jason,Anderson,jason.anderson@cobalt-ridge-manufacturing.example,Cobalt Ridge Manufacturing Inc,Process Data Scientist,250-999,Not yet,Predict pump failure before it happens,2026-10-04
+Mirella,Hellwig,mirella.hellwig@ostwind-versicherung.example,Ostwind Versicherung AG,Head of Credit Risk,1000+,"Yes, I'm already using it","Underwriting model with regulatory approval, private cloud only",2026-10-04
+Kayla,Peterson,kayla.peterson@potter-apps.example,Potter Apps Corp,Data Scientist,250-999,Tried it a few times,Fraud detection on card transactions,2026-10-04
+Anton,Becker,anton.becker@loechel-capital.example,Löchel Capital AG,Risk Modelling Lead,50-249,Just started exploring,Improve retention by predicting churn earlier,2026-10-04
+Ingbert,Ziegert,ingbert.ziegert@lumio-analytics.example,Lumio Analytics GmbH,ML Engineer,50-249,Tried it a few times,Which customers will cancel next quarter?,2026-10-05
+Katy,Jones,katy.jones11@gmx.de,Self-employed,Founder,1-49,Not yet,Not sure yet,2026-10-05
+Vincent,Kramer,vincent.kramer@froehlich-health.example,Fröhlich Health GmbH,Machine Learning Engineer,250-999,Tried it a few times,Customer churn prediction for our subscription business,2026-10-05
