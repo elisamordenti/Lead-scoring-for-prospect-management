@@ -21,9 +21,11 @@ import config
 from fit_score import is_personal_email
 
 CATEGORY_LABELS = {
-    "risk_credit": "risk / credit", "fraud": "fraud", "forecasting": "forecasting",
-    "anomaly_maintenance": "anomaly detection / predictive maintenance", "diagnostics": "diagnostics",
-    "churn": "churn", "other": "other",
+    "fraud": "fraud", "risk_credit": "risk / credit",
+    "anomaly_maintenance_quality": "anomaly detection / maintenance / quality",
+    "clinical_diagnostics": "clinical diagnostics", "churn": "churn", "forecasting": "forecasting",
+    "customer_commercial": "customer / commercial", "operations_supply_chain": "operations / supply chain",
+    config.GENERIC_TABULAR: "generic tabular prediction", config.NOT_PROVIDED: "not provided", "other": "other",
 }
 
 

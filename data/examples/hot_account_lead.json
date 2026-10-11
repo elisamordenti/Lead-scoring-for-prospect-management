@@ -1,0 +1,11 @@
+{
+  "first_name": "Jana",
+  "last_name": "Wexler",
+  "email": "jana.wexler@lumio-analytics.example",
+  "company_name": "Lumio Analytics GmbH",
+  "role": "Head of Data",
+  "company_size": "50-249",
+  "tried_tabpfn": "Tried it a few times",
+  "use_case": "Churn prediction for our subscription customers",
+  "signup_date": "2026-10-06"
+}

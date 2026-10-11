@@ -1,0 +1,11 @@
+{
+  "first_name": "Maya",
+  "last_name": "Carter",
+  "email": "maya.carter@johnson-medtech.example",
+  "company_name": "Johnson MedTech Corp",
+  "role": "Clinical Data Scientist",
+  "company_size": "1000+",
+  "tried_tabpfn": "Tried it a few times",
+  "use_case": "Predict readmission risk from patient lab results",
+  "signup_date": "2026-10-06"
+}

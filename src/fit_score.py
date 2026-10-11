@@ -13,7 +13,9 @@ def is_personal_email(email):
 
 
 def role_tier(role):
-    """'technical', 'business' or 'other'. Technical is checked first."""
+    """'technical', 'business' or 'other'. Technical is checked first, after the non-technical exceptions."""
+    if has_keyword(role, config.NON_TECHNICAL_ROLE_KEYWORDS):  # "Data Entry Clerk" is not a data scientist
+        return "other"
     if has_keyword(role, config.TECHNICAL_ROLE_KEYWORDS):
         return "technical"
     if has_keyword(role, config.BUSINESS_ROLE_KEYWORDS):
@@ -29,6 +31,9 @@ def fit_score(lead, industry, category):
     Returns (score, breakdown) where breakdown is a dict of points per signal.
     """
     strong_use_case = category in config.TARGET_CATEGORIES
+    use_case_points = (config.USE_CASE_POINTS_TARGET if strong_use_case else
+                       config.USE_CASE_POINTS_GENERIC if category == config.GENERIC_TABULAR else
+                       config.USE_CASE_POINTS_OTHER)
 
     # Small companies only get size points if the use case is strong.
     size = lead["company_size"]
@@ -47,7 +52,7 @@ def fit_score(lead, industry, category):
         "industry": config.INDUSTRY_POINTS.get(industry, config.OTHER_INDUSTRY_POINTS),
         "size": size_points,
         "role": role_points,
-        "use_case": config.USE_CASE_POINTS_TARGET if strong_use_case else config.USE_CASE_POINTS_OTHER,
+        "use_case": use_case_points,
         "personal_email": config.PERSONAL_EMAIL_PENALTY if is_personal_email(lead["email"]) else 0,
     }
     score = max(0, sum(breakdown.values()))  # floor at 0

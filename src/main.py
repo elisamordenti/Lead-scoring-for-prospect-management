@@ -41,6 +41,7 @@ def main():
     # 1. One lead at a time: classify, score, route.
     leads, industries, countries = load_leads()
     scored = pd.DataFrame([evaluate_lead(lead, industries[i], countries[i]) for i, lead in leads.iterrows()])
+    scored["fit_score"] = scored["fit_score"].astype("Int64")  # whole numbers; empty for students/academics
     results = pd.concat([leads, scored], axis=1)
     results["account_key"] = [account_key(e, c) for e, c in zip(results["email"], results["company_name"])]
 
@@ -75,8 +76,9 @@ def main():
                "use_case", "signup_date", "industry", "country", "team", "use_case_category", "fit_score",
                "score_breakdown", "route", "reason", "flags", "hot_account", "alert"]
     results["signup_date"] = results["signup_date"].dt.date
-    results.sort_values("fit_score", ascending=False)[columns].to_csv(
-        OUTPUTS / "scored_leads.csv", index=False, encoding="utf-8-sig")
+    output = results.sort_values("fit_score", ascending=False)[columns]  # not scored rows go last
+    output["fit_score"] = output["fit_score"].astype(object).where(output["fit_score"].notna(), "not scored")
+    output.to_csv(OUTPUTS / "scored_leads.csv", index=False, encoding="utf-8-sig")
 
     print(f"\n===== SUMMARY =====")
     print(f"{len(results)} leads scored -> outputs/scored_leads.csv")

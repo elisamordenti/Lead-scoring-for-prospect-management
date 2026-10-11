@@ -67,9 +67,9 @@ Next step: Account Executive (Berlin team): map the account and propose a team d
 🔥 HOT LEAD   (2026-09-30)
 Company: Helvia Health AG (healthcare, 1000+, Switzerland → Berlin team)
 Person: Clinical Data Scientist, tried TabPFN: Tried it a few times
-Why: Fit score 90 (tried 18 + industry 12 + size 20 + role 20 + use case 20 = 90). Use case: diagnostics.
+Why: Fit score 90 (tried 18 + industry 12 + size 20 + role 20 + use case 20 = 90). Use case: clinical diagnostics.
 Flags: deployment/compliance
-Next step: Account Executive (Berlin team): reach out within 24 hours with a diagnostics demo.
+Next step: Account Executive (Berlin team): reach out within 24 hours with a clinical diagnostics demo.
 ```
 
 ```

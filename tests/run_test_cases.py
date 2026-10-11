@@ -46,12 +46,12 @@ TEST_CASES = [
     ("6. Innovation Manager, 1000+ industrial company, not yet, predictive maintenance",
      dict(email="test.six@industrial.example", company_name="Industrial SE", role="Innovation Manager",
           company_size="1000+", tried_tabpfn="Not yet", use_case="Predictive maintenance for our machines"),
-     "industrials", "Germany", AE, 72),
+     "industrials", "Germany", REVIEW, 72),   # was AE until the AE threshold moved from 70 to 75
     ("7. Gmail freelancer, already using, churn",
      dict(email="test.seven@gmail.com", company_name="Self-employed", role="Freelance Data Scientist",
           company_size="1-49", tried_tabpfn=config.ALREADY_USING,
           use_case="Churn prediction for e-commerce clients"),
-     None, None, REVIEW, 46),
+     None, None, REVIEW, 49),   # was 46 until "other industry" points went from 2 to 5
 ]
 
 
